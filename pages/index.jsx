@@ -1,8 +1,53 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import React, { useEffect, useState } from "react";
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import fetch from "node-fetch";
+import axios from "axios";
 
-export default function Home() {
+const api = "http://localhost:3000/api/youtube";
+
+export async function getServerSideProps(context) {
+  const res = await fetch(`${api}`);
+  const data = await res.json();
+
+  return {
+    props: {
+      data,
+    },
+  };
+}
+
+function youtube({ data }) {
+  const [videos, setVideos] = useState([]);
+  const [search, setSearch] = useState(false);
+
+  useEffect(() => {
+    setVideos(data.items);
+  }, []);
+
+  async function handleSearch(event) {
+    // Stop the form from submitting and refreshing the page.
+    event.preventDefault();
+
+    // Get data from the form.
+    const formData = {
+      query: event.target.query.value,
+    };
+    console.log(formData.query);
+
+    // Send the form data to our forms API on Vercel and get a response.
+    axios
+      .get(`${api}/search?query=${formData.query}`)
+      .then(function (response) {
+        console.log(response.data);
+        setSearch(true);
+        setVideos(response.data);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,57 +58,61 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to <a href=".">HealthTube!</a>
         </h1>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <form onSubmit={handleSearch} className={styles.description}>
+          <label htmlFor="query"></label>
+          <input
+            type="text"
+            id="query"
+            name="query"
+            required
+            placeholder="Search"
+          />
+
+          <button type="submit">Search</button>
+        </form>
+
+        {search === false ? (
+          <p className={styles.description}>
+            Recommended Videos{" "}
+            <code className={styles.code}>pages/index.js</code>
+          </p>
+        ) : (
+          <p className={styles.description}>
+            Search Results <code className={styles.code}>pages/index.js</code>
+          </p>
+        )}
 
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          {videos.slice(0, 10).map((video, index) =>
+            // Api can return unavailable videos therefore we need to catch this
+            video.snippet ? (
+              <a
+                key={index}
+                href={`https://youtube.com/watch?v=${video.id.videoId}`}
+                className={styles.card}
+              >
+                <h3>{video.snippet.title}</h3>
+                <img
+                  src={video.snippet.thumbnails.high.url}
+                  alt={video.snippet.title}
+                />
+                {video.snippet.description ? (
+                  <p>{video.snippet.description}</p>
+                ) : (
+                  <p>No Description</p>
+                )}
+              </a>
+            ) : (
+              <></>
+            )
+          )}
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
-  )
+  );
 }
+
+export default youtube;

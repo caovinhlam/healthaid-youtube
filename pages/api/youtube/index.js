@@ -16,7 +16,7 @@ const options = {
 };
 
 export default async function handler(req, res) {
-  axios
+  return axios
     .request(options)
     .then(function (response) {
       console.log(response.data);
@@ -25,6 +25,7 @@ export default async function handler(req, res) {
     })
     .catch(function (error) {
       console.error(error);
+      res.status(400).json(error.res.data);
     });
 }
 
