@@ -134,3 +134,7 @@
     filter: invert(1);
   }
 }
+
+.comments {
+  max-width: 900px;
+}

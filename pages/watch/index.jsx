@@ -5,19 +5,34 @@ import styles from "../../styles/Home.module.css";
 import ReactPlayer from "react-player/youtube";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import axios from "axios"
 
 
 function watch() {
-  
+  const api = "http://localhost:3000/api/youtube";
+
+  const router = useRouter()
+  const { id, title } = router.query
   const [hasWindow, setHasWindow] = useState(false);
+  const [comments, setComments] = useState([])
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHasWindow(true);
     }
-  }, []);
+    if (router.asPath !== router.route)
+      axios
+        // .get(`${api}/comments?query=${id}`)
+        .get(`${api}/dummy_comments`)
+        .then(function (response) {
+          console.log(response);
+          setComments(response.data.data);
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+  }, [router]);
 
-  const router = useRouter()
-  const { id, title } = router.query
   return (
     <div className={styles.container}>
       <Head>
@@ -39,6 +54,17 @@ function watch() {
             height={"80vh"}
           />
         )}
+          <p className={styles.description}>Comments</p>
+        <div style={{display: "grid"}}>
+          {comments.slice(0, 10).map((comment, index) => (
+            <a className={`${styles.card} ${styles.comments}`}>
+              <h3>
+                {comment.snippet.topLevelComment.snippet.authorDisplayName}
+              </h3>
+              <p>{comment.snippet.topLevelComment.snippet.textOriginal}</p>
+            </a>
+          ))}
+        </div>
       </main>
     </div>
   );

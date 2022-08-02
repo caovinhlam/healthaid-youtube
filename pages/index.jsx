@@ -39,7 +39,6 @@ function youtube({ data }) {
     const formData = {
       query: event.target.query.value,
     };
-    console.log(formData.query);
 
     // Get searched videos based on search query
     axios
@@ -81,12 +80,11 @@ function youtube({ data }) {
 
         {search === false ? (
           <p className={styles.description}>
-            Recommended Videos{" "}
-            <code className={styles.code}>pages/index.js</code>
+            Recommended Videos
           </p>
         ) : (
           <p className={styles.description}>
-            Search Results <code className={styles.code}>pages/index.js</code>
+            Search Results
           </p>
         )}
 

@@ -3,13 +3,11 @@ import axios from "axios"
 export default function handler(req, res) {
   const options = {
     method: "GET",
-    url: `https://${process.env.NEXT_PUBLIC_RAPID_URL}/search`,
+    url: "https://youtube-v31.p.rapidapi.com/commentThreads",
     params: {
-      q: req.query["query"],
-      part: "snippet,id",
-      regionCode: "US",
-      maxResults: "50",
-      order: "relevance",
+      videoId: req.query["query"],
+      part: "snippet",
+      maxResults: "100",
     },
     headers: {
       "X-RapidAPI-Key": process.env.NEXT_PUBLIC_RAPID_API_KEY,
