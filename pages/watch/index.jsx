@@ -9,12 +9,12 @@ import axios from "axios"
 
 
 function watch() {
-  const api = "http://localhost:3000/api/youtube";
+  const api = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:3000/api/youtube";
 
   const router = useRouter()
   const { id, title } = router.query
   const [hasWindow, setHasWindow] = useState(false);
-  const [comments, setComments] = useState([])
+  const [comments, setComments] = useState(false)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,11 +22,14 @@ function watch() {
     }
     if (router.asPath !== router.route)
       axios
-        // .get(`${api}/comments?query=${id}`)
-        .get(`${api}/dummy_comments`)
+        .get(`${api}/comments?query=${id}`)
+        // Uncomment for dummy data
+        // .get(`${api}/dummy_comments`)
         .then(function (response) {
           console.log(response);
-          setComments(response.data.data);
+          if (response.data != "") {
+            setComments(response.data);
+          }
         })
         .catch(function (error) {
           console.error(error);
@@ -55,15 +58,16 @@ function watch() {
           />
         )}
           <p className={styles.description}>Comments</p>
-        <div style={{display: "grid"}}>
-          {comments.slice(0, 10).map((comment, index) => (
+        <div style={{ display: "grid" }}>
+          {comments && (
+          comments.slice(0, 10).map((comment, index) => (
             <a className={`${styles.card} ${styles.comments}`}>
               <h3>
                 {comment.snippet.topLevelComment.snippet.authorDisplayName}
               </h3>
               <p>{comment.snippet.topLevelComment.snippet.textOriginal}</p>
             </a>
-          ))}
+          )))}
         </div>
       </main>
     </div>

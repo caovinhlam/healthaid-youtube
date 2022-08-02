@@ -1,9 +1,5 @@
-
-
-
 export default async function handler(req, res) {
-  const dummy = {
-    "data": [
+  const dummy = [
         {
             "kind": "youtube#commentThread",
             "id": "UgzoAcb5RvRwRP155M14AaABAg",
@@ -844,44 +840,7 @@ export default async function handler(req, res) {
                 "isPublic": true
             }
         }
-    ],
-    "status": 200,
-    "statusText": "OK",
-    "headers": {
-        "content-encoding": "gzip",
-        "content-type": "application/json; charset=utf-8",
-        "date": "Tue, 02 Aug 2022 00:56:31 GMT",
-        "etag": "\"28h06isma3id8\"",
-        "vary": "Accept-Encoding"
-    },
-    "config": {
-        "transitional": {
-            "silentJSONParsing": true,
-            "forcedJSONParsing": true,
-            "clarifyTimeoutError": false
-        },
-        "transformRequest": [
-            null
-        ],
-        "transformResponse": [
-            null
-        ],
-        "timeout": 0,
-        "xsrfCookieName": "XSRF-TOKEN",
-        "xsrfHeaderName": "X-XSRF-TOKEN",
-        "maxContentLength": -1,
-        "maxBodyLength": -1,
-        "env": {
-            "FormData": null
-        },
-        "headers": {
-            "Accept": "application/json, text/plain, */*"
-        },
-        "method": "get",
-        "url": "http://localhost:3000/api/youtube/comments?query=6YV9ehkcFgM"
-    },
-    "request": {}
-  }
-res.status(200).json(dummy);
+    ]
+    res.status(200).json(dummy);
 }
 

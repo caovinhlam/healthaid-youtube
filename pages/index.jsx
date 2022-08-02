@@ -5,14 +5,16 @@ import fetch from "node-fetch";
 import axios from "axios";
 import Link from "next/link";
 
-const api = "http://localhost:3000/api/youtube";
+const api =
+  process.env.NEXT_PUBLIC_PUBLIC_API_ENDPOINT ||
+  "http://localhost:3000/api/youtube";
 
 export async function getServerSideProps(context) {
-  // Uncomment to use the API
-  // const res = await fetch(`${api}`);
-
+  const res = await fetch(`${api}`);
+  
+  // Uncomment to use the dummy data
   // Using dummy data for development to reduce api usage
-  const res = await fetch(`${api}/dummy`)
+  // const res = await fetch(`${api}/dummy`)
   const data = await res.json();
 
   return {
@@ -27,7 +29,6 @@ function youtube({ data }) {
   const [search, setSearch] = useState(false);
   
   useEffect(() => {
-    console.log(data)
     setVideos(data.items);
   }, []);
 
