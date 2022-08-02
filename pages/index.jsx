@@ -3,11 +3,16 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import fetch from "node-fetch";
 import axios from "axios";
+import Link from "next/link";
 
 const api = "http://localhost:3000/api/youtube";
 
 export async function getServerSideProps(context) {
-  const res = await fetch(`${api}`);
+  // Uncomment to use the API
+  // const res = await fetch(`${api}`);
+
+  // Using dummy data for development to reduce api usage
+  const res = await fetch(`${api}/dummy`)
   const data = await res.json();
 
   return {
@@ -20,8 +25,9 @@ export async function getServerSideProps(context) {
 function youtube({ data }) {
   const [videos, setVideos] = useState([]);
   const [search, setSearch] = useState(false);
-
+  
   useEffect(() => {
+    console.log(data)
     setVideos(data.items);
   }, []);
 
@@ -35,11 +41,10 @@ function youtube({ data }) {
     };
     console.log(formData.query);
 
-    // Send the form data to our forms API on Vercel and get a response.
+    // Get searched videos based on search query
     axios
       .get(`${api}/search?query=${formData.query}`)
       .then(function (response) {
-        console.log(response.data);
         setSearch(true);
         setVideos(response.data);
       })
@@ -89,22 +94,27 @@ function youtube({ data }) {
           {videos.slice(0, 10).map((video, index) =>
             // Api can return unavailable videos therefore we need to catch this
             video.snippet ? (
-              <a
+              <Link
                 key={index}
-                href={`https://youtube.com/watch?v=${video.id.videoId}`}
-                className={styles.card}
+                href={{
+                  pathname: `/watch`,
+                  query: { id: video.id.videoId, title: video.snippet.title },
+                  // state: { id: video.id.videoId, title: video.snippet.title },
+                }}
               >
-                <h3>{video.snippet.title}</h3>
-                <img
-                  src={video.snippet.thumbnails.high.url}
-                  alt={video.snippet.title}
-                />
-                {video.snippet.description ? (
-                  <p>{video.snippet.description}</p>
-                ) : (
-                  <p>No Description</p>
-                )}
-              </a>
+                <a className={styles.card}>
+                  <h3>{video.snippet.title}</h3>
+                  <img
+                    src={video.snippet.thumbnails.high.url}
+                    alt={video.snippet.title}
+                  />
+                  {video.snippet.description ? (
+                    <p>{video.snippet.description}</p>
+                  ) : (
+                    <p>No Description</p>
+                  )}
+                </a>
+              </Link>
             ) : (
               <></>
             )

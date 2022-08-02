@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Getting recommended videos for home page
 const options = {
   method: "GET",
   url: `https://${process.env.NEXT_PUBLIC_RAPID_URL}/search`,
@@ -19,7 +20,6 @@ export default async function handler(req, res) {
   return axios
     .request(options)
     .then(function (response) {
-      console.log(response.data);
       const jsonData = response.data;
       res.status(200).json(jsonData)
     })
